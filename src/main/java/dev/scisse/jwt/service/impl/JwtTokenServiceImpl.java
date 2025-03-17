@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,6 @@ import dev.scisse.jwt.exception.TokenExpiredException;
 import dev.scisse.jwt.model.JwtToken;
 import dev.scisse.jwt.service.JwtTokenService;
 import dev.scisse.jwt.service.TokenBlacklistService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 /**
@@ -162,28 +161,23 @@ public class JwtTokenServiceImpl implements JwtTokenService {
      * @throws TokenExpiredException If the token has expired
      */
     @Override
-    public JwtToken validateToken(String token) throws JwtException {
-        try {
-            // Check if the token is blacklisted
-            if (tokenBlacklistService.isBlacklisted(token)) {
-                throw new Exception("JWT token has been revoked");
-            }
-            
-            Claims claims = extractAllClaims(token);
-            String subject = claims.getSubject();
-            Date issuedAt = claims.getIssuedAt();
-            Date expiration = claims.getExpiration();
-            
-            if (isTokenExpired(token)) {
-                throw new TokenExpiredException("JWT token is expired");
-            }
-            
-            Map<String, Object> claimsMap = new HashMap<>(claims);
-            
-            return new JwtToken(token, subject, issuedAt, expiration, claimsMap);
-        } catch (Exception e) {
-            throw new JwtException("Invalid JWT token: " + e.getMessage());
+    public JwtToken validateToken(String token) throws JwtException, TokenExpiredException {
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            throw new JwtException("Invalid JWT token: JWT token has been revoked");
         }
+
+        Claims claims = extractAllClaims(token);
+        String subject = claims.getSubject();
+        Date issuedAt = claims.getIssuedAt();
+        Date expiration = claims.getExpiration();
+
+        if (isTokenExpired(token)) {
+            throw new TokenExpiredException("JWT token is expired");
+        }
+
+        Map<String, Object> claimsMap = new HashMap<>(claims);
+
+        return new JwtToken(token, subject, issuedAt, expiration, claimsMap);
     }
     
     /**
@@ -234,21 +228,21 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     public JwtToken refreshToken(String token) throws JwtException {
         try {
             JwtToken validToken = validateToken(token);
-
+            this.invalidateToken(validToken.getToken());
             return generateToken(validToken.getSubject(), validToken.getClaims());
         } catch (TokenExpiredException e) {
-            // Refreshing expired tokens within a grace period
-            Claims claims = null;
+            Claims claims;
             try {
                 claims = Jwts.parser()
                         .verifyWith(key)
+                        .clockSkewSeconds(jwtProperties.getRefreshWindowMs())
                         .build()
                         .parseSignedClaims(token)
                         .getPayload();
             } catch (Exception ex) {
                 throw new JwtException("Cannot refresh invalid token", ex);
             }
-            
+
             Date expiration = claims.getExpiration();
             Date now = new Date();
             
@@ -294,8 +288,14 @@ public class JwtTokenServiceImpl implements JwtTokenService {
      */
     @Override
     public boolean isTokenExpired(String token) {
-        Date expiration = extractAllClaims(token).getExpiration();
-        return expiration.before(new Date());
+        Date expirationDate;
+        try{
+            expirationDate = extractAllClaims(token).getExpiration();
+        } catch (TokenExpiredException ignored) {
+            return true;
+        }
+
+        return expirationDate.before(new Date());
     }
 
     /**
@@ -311,13 +311,20 @@ public class JwtTokenServiceImpl implements JwtTokenService {
      *
      * @param token The JWT token string
      * @return The claims from the token
+     * @throws TokenExpiredException If the token has expired
      * @throws JwtException If the token is malformed or the signature is invalid
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try{
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException exception) {
+            throw new TokenExpiredException("Expired JWT token", exception);
+        } catch (UnsupportedJwtException | IllegalArgumentException exception) {
+            throw new JwtException("Invalid JWT token", exception);
+        }
     }
 }
