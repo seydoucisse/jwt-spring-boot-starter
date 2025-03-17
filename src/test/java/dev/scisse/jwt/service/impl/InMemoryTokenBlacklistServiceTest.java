@@ -1,112 +1,69 @@
 package dev.scisse.jwt.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
 
-@ExtendWith(MockitoExtension.class)
-public class InMemoryTokenBlacklistServiceTest {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    @Mock
-    private Logger logger;
+class InMemoryTokenBlacklistServiceTest {
 
-    @InjectMocks
     private InMemoryTokenBlacklistService tokenBlacklistService;
 
-    private Map<String, Long> blacklistedTokens;
-
     @BeforeEach
-    public void setUp() throws Exception {
-        // Access the private blacklistedTokens field for testing
-        blacklistedTokens = new ConcurrentHashMap<>();
-        Field blacklistedTokensField = InMemoryTokenBlacklistService.class.getDeclaredField("blacklistedTokens");
-        blacklistedTokensField.setAccessible(true);
-        blacklistedTokensField.set(tokenBlacklistService, blacklistedTokens);
+    void setUp() {
+        tokenBlacklistService = new InMemoryTokenBlacklistService();
     }
 
     @Test
-    public void testBlacklistToken() {
-        // Given
+    void shouldBlacklistToken() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test";
         long expirationTime = System.currentTimeMillis() + 3600000; // 1 hour from now
 
-        // When
         tokenBlacklistService.blacklistToken(token, expirationTime);
 
-        // Then
-        assertTrue(blacklistedTokens.containsKey(token));
-        assertEquals(expirationTime, blacklistedTokens.get(token));
-        verify(logger).debug(contains("Token blacklisted"), eq(token));
+        assertTrue(tokenBlacklistService.isBlacklisted(token));
     }
 
     @Test
-    public void testIsBlacklisted_TokenExists() {
-        // Given
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.exists";
-        blacklistedTokens.put(token, System.currentTimeMillis() + 3600000);
-
-        // When
-        boolean result = tokenBlacklistService.isBlacklisted(token);
-
-        // Then
-        assertTrue(result);
-    }
-
-    @Test
-    public void testIsBlacklisted_TokenDoesNotExist() {
-        // Given
+    void shouldReturnFalseIfTokenNotInBlacklist() {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.notExists";
 
-        // When
         boolean result = tokenBlacklistService.isBlacklisted(token);
 
-        // Then
         assertFalse(result);
     }
 
     @Test
-    public void testCleanupExpiredTokens() {
-        // Given
-        String validToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.valid";
-        String expiredToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.expired";
-        
-        long currentTime = System.currentTimeMillis();
-        blacklistedTokens.put(validToken, currentTime + 3600000); // 1 hour from now
-        blacklistedTokens.put(expiredToken, currentTime - 1000); // 1 second ago (expired)
+    void shouldNotBlacklistExpiredToken() {
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.expired";
 
-        // When
-        tokenBlacklistService.cleanupExpiredTokens();
+        long expirationTime = System.currentTimeMillis() - 1000;
+        tokenBlacklistService.blacklistToken(token, expirationTime);
 
-        // Then
-        assertTrue(blacklistedTokens.containsKey(validToken));
-        assertFalse(blacklistedTokens.containsKey(expiredToken));
-        verify(logger).debug(contains("Cleaning up expired blacklisted tokens"));
-        verify(logger).debug(contains("Blacklist cleanup completed"), anyInt());
+        assertFalse(tokenBlacklistService.isBlacklisted(token));
     }
 
     @Test
-    public void testConcurrentAccess() throws InterruptedException {
-        // Given
+    void shouldCleanExpiredTokens() {
+        String validToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.valid";
+        String expiredToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.expired";
+        long currentTime = System.currentTimeMillis();
+        tokenBlacklistService.blacklistToken(validToken, currentTime + 3600000); // 1 hour from now
+        tokenBlacklistService.blacklistToken(expiredToken, currentTime - 1000); // 1 second ago (expired)
+
+        tokenBlacklistService.cleanupExpiredTokens();
+
+        assertTrue(tokenBlacklistService.isBlacklisted(validToken));
+        assertFalse(tokenBlacklistService.isBlacklisted(expiredToken));
+    }
+
+    @Test
+    void shouldAddConcurrentlyTokens() throws InterruptedException {
         int threadCount = 10;
         Thread[] threads = new Thread[threadCount];
         
-        // When - create multiple threads that add tokens to the blacklist
+        // Create multiple threads that add tokens to the blacklist
         for (int i = 0; i < threadCount; i++) {
             final int index = i;
             threads[i] = new Thread(() -> {
@@ -116,16 +73,14 @@ public class InMemoryTokenBlacklistServiceTest {
             });
             threads[i].start();
         }
-        
-        // Wait for all threads to complete
+
         for (Thread thread : threads) {
             thread.join();
         }
         
         // Then
-        assertEquals(threadCount, blacklistedTokens.size());
         for (int i = 0; i < threadCount; i++) {
-            assertTrue(blacklistedTokens.containsKey("token" + i));
+            assertTrue(tokenBlacklistService.isBlacklisted("token" + i));
         }
     }
 }

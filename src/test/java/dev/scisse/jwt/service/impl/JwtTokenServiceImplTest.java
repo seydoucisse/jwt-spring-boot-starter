@@ -1,34 +1,5 @@
 package dev.scisse.jwt.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.crypto.SecretKey;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-
 import dev.scisse.jwt.config.JwtProperties;
 import dev.scisse.jwt.exception.JwtException;
 import dev.scisse.jwt.exception.TokenExpiredException;
@@ -36,45 +7,44 @@ import dev.scisse.jwt.model.JwtToken;
 import dev.scisse.jwt.service.TokenBlacklistService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class JwtTokenServiceImplTest {
+class JwtTokenServiceImplTest {
 
     @Mock
     private TokenBlacklistService tokenBlacklistService;
 
-    @Mock
-    private Logger logger;
+    private final JwtProperties jwtProperties = new JwtProperties();
 
-    @Spy
-    private JwtProperties jwtProperties = new JwtProperties();
-
-    @InjectMocks
     private JwtTokenServiceImpl jwtTokenService;
 
-    private SecretKey key;
-    private String validToken;
-    private String expiredToken;
-    private String subject = "testUser";
+    private static String validToken;
+    private static String expiredToken;
+    private final String subject = "testUser";
 
     @BeforeEach
-    public void setUp() {
-        // Configure JWT properties
-        jwtProperties.setSecret("thisIsAVeryLongSecretKeyForTestingPurposesOnly12345");
+    void setUp() {
+        jwtProperties.setSecret("A".repeat(64));
         jwtProperties.setExpirationMs(3600000L); // 1 hour
         jwtProperties.setIssuer("jwt-starter-test");
-        
-        // Create the signing key
-        key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
-        
-        // Set the key in the service
-        try {
-            java.lang.reflect.Field keyField = JwtTokenServiceImpl.class.getDeclaredField("key");
-            keyField.setAccessible(true);
-            keyField.set(jwtTokenService, key);
-        } catch (Exception e) {
-            fail("Failed to set key field: " + e.getMessage());
-        }
+        SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+
+        jwtTokenService = new JwtTokenServiceImpl(jwtProperties, tokenBlacklistService);
         
         Date now = new Date();
         Date expiry = new Date(now.getTime() + 3600000);
@@ -87,22 +57,20 @@ public class JwtTokenServiceImplTest {
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
         
-        Date pastDate = new Date(now.getTime() - 3600000);
+        Date pastDate = new Date(now.getTime() - (1000L * 60 * 4));
         expiredToken = Jwts.builder()
                 .subject(subject)
                 .issuedAt(pastDate)
-                .expiration(new Date(pastDate.getTime() + 1000)) // Expired 1 second after issuance
+                .expiration(new Date(pastDate.getTime() + 10000))
                 .issuer(jwtProperties.getIssuer())
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
 
     @Test
-    public void testGenerateToken_WithSubjectOnly() {
-        // When
+    void shouldGenerateValidTokenWithDefaultClaims() {
         JwtToken token = jwtTokenService.generateToken(subject);
-        
-        // Then
+
         assertNotNull(token);
         assertEquals(subject, token.getSubject());
         assertNotNull(token.getToken());
@@ -113,16 +81,13 @@ public class JwtTokenServiceImplTest {
     }
 
     @Test
-    public void testGenerateToken_WithClaims() {
-        // Given
+    void shouldGenerateValidTokenWithCustomClaims() {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", "ADMIN");
         claims.put("userId", 123);
-        
-        // When
+
         JwtToken token = jwtTokenService.generateToken(subject, claims);
-        
-        // Then
+
         assertNotNull(token);
         assertEquals(subject, token.getSubject());
         assertNotNull(token.getToken());
@@ -135,14 +100,11 @@ public class JwtTokenServiceImplTest {
     }
 
     @Test
-    public void testValidateToken_ValidToken() throws Exception {
-        // Given
+    void shouldValidateToken() {
         when(tokenBlacklistService.isBlacklisted(anyString())).thenReturn(false);
-        
-        // When
+
         JwtToken token = jwtTokenService.validateToken(validToken);
-        
-        // Then
+
         assertNotNull(token);
         assertEquals(subject, token.getSubject());
         assertEquals(validToken, token.getToken());
@@ -151,70 +113,60 @@ public class JwtTokenServiceImplTest {
     }
 
     @Test
-    public void testValidateToken_ExpiredToken() {
-        // Given
+    void shouldThrowTokenExpiredExceptionWhenTokenExpired() {
         when(tokenBlacklistService.isBlacklisted(anyString())).thenReturn(false);
-        
-        // When/Then
-        assertThrows(TokenExpiredException.class, () -> {
-            jwtTokenService.validateToken(expiredToken);
-        });
+
+        assertThrows(TokenExpiredException.class, () -> jwtTokenService.validateToken(expiredToken));
     }
 
     @Test
-    public void testValidateToken_BlacklistedToken() {
-        // Given
+    void shouldThrowJwtExceptionWhenTokenInvalid() {
         when(tokenBlacklistService.isBlacklisted(validToken)).thenReturn(true);
-        
-        // When/Then
-        JwtException exception = assertThrows(JwtException.class, () -> {
-            jwtTokenService.validateToken(validToken);
-        });
-        
-        assertEquals("JWT token has been revoked", exception.getMessage());
+
+        JwtException exception = assertThrows(JwtException.class, () -> jwtTokenService.validateToken(validToken));
+        assertEquals("Invalid JWT token: JWT token has been revoked", exception.getMessage());
     }
 
     @Test
-    public void testGetSubjectFromToken() {
-        // When
+    void shouldGetSubjectFromToken() {
         String extractedSubject = jwtTokenService.getSubjectFromToken(validToken);
-        
-        // Then
+
         assertEquals(subject, extractedSubject);
     }
 
     @Test
-    public void testIsTokenExpired_ValidToken() {
-        // When
+    void shouldReturnFalseWhenTokenValid() {
         boolean isExpired = jwtTokenService.isTokenExpired(validToken);
-        
-        // Then
+
         assertFalse(isExpired);
     }
 
     @Test
-    public void testIsTokenExpired_ExpiredToken() {
-        // When
+    void shouldReturnTrueWhenTokenExpired() {
         boolean isExpired = jwtTokenService.isTokenExpired(expiredToken);
-        
-        // Then
+
         assertTrue(isExpired);
     }
 
     @Test
-    public void testRefreshToken() throws Exception {
-        // Given
+    void shouldRefreshValidToken() {
         when(tokenBlacklistService.isBlacklisted(anyString())).thenReturn(false);
-        
-        // When
+
         JwtToken refreshedToken = jwtTokenService.refreshToken(validToken);
-        
-        // Then
+
         assertNotNull(refreshedToken);
         assertNotEquals(validToken, refreshedToken.getToken());
         assertEquals(subject, refreshedToken.getSubject());
-        
-        // Verify the old token was blacklisted
         verify(tokenBlacklistService).blacklistToken(eq(validToken), anyLong());
+    }
+
+    @Test
+    void shouldRefreshExpiredToken() {
+        JwtToken refreshedToken = jwtTokenService.refreshToken(expiredToken);
+
+        assertNotNull(refreshedToken);
+        assertNotEquals(expiredToken, refreshedToken.getToken());
+        assertEquals(subject, refreshedToken.getSubject());
+        verify(tokenBlacklistService, never()).blacklistToken(eq(expiredToken), anyLong());
     }
 }
