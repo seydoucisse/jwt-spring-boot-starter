@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import jakarta.annotation.Nonnull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -120,7 +121,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @return true if the filter should not be applied, false otherwise
      */
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
+    protected boolean shouldNotFilter(@Nonnull HttpServletRequest request) {
         return !jwtProperties.isEnabled() || excludedPaths.matches(request);
     }
 
@@ -146,7 +147,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @throws IOException If an I/O error occurs during request processing
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull FilterChain filterChain)
             throws ServletException, IOException {
 
         String token = extractToken(request);

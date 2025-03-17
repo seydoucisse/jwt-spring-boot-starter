@@ -46,7 +46,7 @@ import dev.scisse.jwt.service.TokenBlacklistService;
  * </ul>
  * </p>
  * <p>
- * Limitations:
+ * Limitations :
  * <ul>
  *   <li>Tokens are not persisted across application restarts</li>
  *   <li>Not suitable for distributed environments without additional synchronization</li>
@@ -122,12 +122,10 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
         if (!blacklistedTokens.containsKey(token)) {
             return false;
         }
-        
-        // Check if the token has expired in the blacklist
+
         long expirationTime = blacklistedTokens.get(token);
         long currentTime = System.currentTimeMillis();
-        
-        // If token has expired, remove it from the blacklist
+
         if (currentTime > expirationTime) {
             blacklistedTokens.remove(token);
             return false;

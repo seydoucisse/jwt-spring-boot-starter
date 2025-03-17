@@ -32,12 +32,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * jwt:
  *   secret: your-secret-key
  *   issuer: your-application
- *   expirationMs: 86400000
- *   refreshWindowMs: 300000
+ *   expiration-ms: 86400000
+ *   refresh-window-ms: 300000
  *   excludedPaths: /api/auth/**, /public/**
  *   enabled: true
- *   headerName: Authorization
- *   tokenPrefix: "Bearer "
+ *   header-name: Authorization
+ *   token-prefix: "Bearer "
  * </pre>
  * <p>
  * Required properties:
@@ -72,7 +72,7 @@ public class JwtProperties {
      * Default: 24 hours (86,400,000 milliseconds)
      * </p>
      */
-    private long expirationMs = 24 * 60 * 60 * 1000;
+    private long expirationMs = 24 * 60 * 60 * 1000L;
 
     /**
      * Refresh window time in milliseconds.
@@ -85,7 +85,7 @@ public class JwtProperties {
      * Default: 5 minutes (300,000 milliseconds)
      * </p>
      */
-    private long refreshWindowMs = 5 * 60 * 1000;
+    private long refreshWindowMs = 5 * 60 * 1000L;
 
     /**
      * Interval for cleaning up blacklisted tokens in milliseconds.
@@ -97,7 +97,7 @@ public class JwtProperties {
      * Default: 10 minutes (600,000 milliseconds)
      * </p>
      */
-    private long blacklistedCleanupIntervalMs = 10 * 60 * 1000;
+    private long blacklistedCleanupIntervalMs = 10 * 60 * 1000L;
     
     /**
      * Token issuer.

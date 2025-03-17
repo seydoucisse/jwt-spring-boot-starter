@@ -15,7 +15,7 @@
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
     
@@ -38,6 +38,7 @@
         <java.version>17</java.version>
         <spring-boot.version>3.4.3</spring-boot.version>
         <jjwt.version>0.12.6</jjwt.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
     <dependencyManagement>
