@@ -59,7 +59,7 @@ The starter requires minimal configuration. You must set the following required 
 
 ```properties
 # Required JWT Configuration
-jwt.secret=yourSecretKey     # REQUIRED: Secret key used for signing JWT tokens
+jwt.secret=yourSecretKey     # REQUIRED: Secret key used for signing JWT tokens (Minimum 64 characters)
 jwt.issuer=your-app          # REQUIRED: Issuer of the JWT tokens
 
 # Optional JWT Configuration

@@ -73,7 +73,7 @@ For detailed configuration options, see the [Configuration Properties](#configur
 The starter can be configured with the following properties:
 
 - `jwt.enabled`: Whether to enable JWT authentication. Default: `true`.
-- `jwt.secret`: The secret key used to sign and verify JWT tokens.
+- `jwt.secret`: The secret key used to sign and verify JWT tokens. (Minimum 64 characters)
 - `jwt.expiration-ms`: The expiration time of JWT tokens in milliseconds. Default: `86400000` (24 hours).
 - `jwt.issuer`: The issuer of JWT tokens.
 - `jwt.refresh-window-ms`: The refresh window time in milliseconds. Default: `300000` (5 mins).
