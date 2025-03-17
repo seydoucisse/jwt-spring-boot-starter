@@ -15,10 +15,7 @@
  */
 package dev.scisse.jwt.service.impl;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import dev.scisse.jwt.service.TokenBlacklistService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,7 +23,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import dev.scisse.jwt.service.TokenBlacklistService;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * In-memory implementation of the TokenBlacklistService.
@@ -151,7 +150,7 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
      * </ol>
      * </p>
      */
-    @Scheduled(fixedRateString = "#{@jwtProperties.blacklistedCleanupIntervalMs}")
+    @Scheduled(fixedRateString = "${jwt.blacklisted-cleanup-interval-ms}")
     public void cleanupExpiredTokens() {
         logger.debug("Cleaning up expired blacklisted tokens");
         long currentTime = System.currentTimeMillis();
