@@ -24,7 +24,6 @@ import java.util.Map;
  * This class encapsulates all the information related to a JWT token, including
  * the token string itself, the subject (typically a username or user ID),
  * issuance and expiration dates, and any additional claims.
- * </p>
  * 
  * @author Seydou CISSE
  * @since 0.1.0

@@ -24,10 +24,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * including token generation, validation, and filter behavior. These properties
  * can be configured in application.properties or application.yml using the
  * 'jwt' prefix.
- * </p>
+ * 
  * <p>
  * Example configuration in application.yml:
- * </p>
+ * 
  * <pre>
  * jwt:
  *   secret: your-secret-key
@@ -41,7 +41,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * </pre>
  * <p>
  * Required properties:
- * </p>
+ * 
  * <ul>
  *   <li>secret - The secret key used for signing JWT tokens</li>
  *   <li>issuer - The issuer claim to include in JWT tokens</li>
@@ -59,7 +59,7 @@ public class JwtProperties {
      * <p>
      * This property is mandatory and must be specified in your configuration.
      * It should be a strong, unique secret that is kept secure.
-     * </p>
+     * 
      */
     private String secret;
     
@@ -67,10 +67,10 @@ public class JwtProperties {
      * Token expiration time in milliseconds.
      * <p>
      * Specifies how long a generated token will be valid before it expires.
-     * </p>
+     * 
      * <p>
      * Default: 24 hours (86,400,000 milliseconds)
-     * </p>
+     * 
      */
     private long expirationMs = 24 * 60 * 60 * 1000L;
 
@@ -80,10 +80,10 @@ public class JwtProperties {
      * Defines the time window after token expiration during which the token
      * can still be refreshed. This allows for token refresh even if the token
      * has just expired.
-     * </p>
+     * 
      * <p>
      * Default: 5 minutes (300,000 milliseconds)
-     * </p>
+     * 
      */
     private long refreshWindowMs = 5 * 60 * 1000L;
 
@@ -92,10 +92,10 @@ public class JwtProperties {
      * <p>
      * Specifies how often the system should clean up expired tokens from the
      * blacklist.
-     * </p>
+     * 
      * <p>
      * Default: 10 minutes (600,000 milliseconds)
-     * </p>
+     * 
      */
     private long blacklistedCleanupIntervalMs = 10 * 60 * 1000L;
     
@@ -104,10 +104,10 @@ public class JwtProperties {
      * <p>
      * The issuer claim to include in JWT tokens. This helps identify the source
      * of the token.
-     * </p>
+     * 
      * <p>
      * This property is mandatory and must be specified in your configuration.
-     * </p>
+     * 
      */
     private String issuer;
     
@@ -116,10 +116,10 @@ public class JwtProperties {
      * <p>
      * Specifies URL patterns that should be excluded from JWT authentication.
      * These paths will be accessible without a valid JWT token.
-     * </p>
+     * 
      * <p>
      * Default: ["/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**"]
-     * </p>
+     * 
      */
     private String[] excludedPaths = {"/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**"};
     
@@ -128,10 +128,9 @@ public class JwtProperties {
      * <p>
      * Controls whether JWT authentication is enabled for the application.
      * When set to false, JWT authentication will be disabled.
-     * </p>
+     * 
      * <p>
      * Default: true
-     * </p>
      */
     private boolean enabled = true;
     
@@ -140,10 +139,9 @@ public class JwtProperties {
      * <p>
      * Specifies the HTTP header name where the JWT token should be provided
      * in requests.
-     * </p>
+     * 
      * <p>
      * Default: "Authorization"
-     * </p>
      */
     private String headerName = "Authorization";
     
@@ -153,10 +151,9 @@ public class JwtProperties {
      * Specifies the prefix that should be used before the JWT token in the
      * authorization header. The token in the header should be formatted as:
      * "{tokenPrefix}{token}".
-     * </p>
+     * 
      * <p>
      * Default: "Bearer "
-     * </p>
      */
     private String tokenPrefix = "Bearer ";
 

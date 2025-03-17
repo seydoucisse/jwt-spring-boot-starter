@@ -15,12 +15,14 @@
  */
 package dev.scisse.jwt.filter;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import dev.scisse.jwt.config.JwtProperties;
+import dev.scisse.jwt.model.JwtToken;
+import dev.scisse.jwt.service.JwtTokenService;
 import jakarta.annotation.Nonnull;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,13 +33,10 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import dev.scisse.jwt.config.JwtProperties;
-import dev.scisse.jwt.model.JwtToken;
-import dev.scisse.jwt.service.JwtTokenService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Filter for JWT authentication in Spring Security.
@@ -45,7 +44,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * This filter intercepts HTTP requests and validates JWT tokens provided in the
  * request headers. It extracts the token, validates it using the {@link JwtTokenService},
  * and sets up the Spring Security authentication context based on the token's claims.
- * </p>
+ * 
  * <p>
  * The filter supports:
  * <ul>
@@ -54,17 +53,17 @@ import jakarta.servlet.http.HttpServletResponse;
  *   <li>Integration with Spring Security's {@link UserDetailsService} (required)</li>
  *   <li>Fallback to token-based authorities if user details are not found</li>
  * </ul>
- * </p>
+ * 
  * <p>
  * <strong>Note:</strong> A {@link UserDetailsService} implementation must be provided
  * to use this filter. The filter will attempt to load user details from this service
  * when authenticating tokens, with a fallback to token-based authorities if the user
  * is not found.
- * </p>
+ * 
  * <p>
  * The filter is automatically configured by the JWT starter when JWT authentication
  * is enabled, but can also be manually configured in a Spring Security setup.
- * </p>
+ * 
  * 
  * @author Seydou CISSE
  * @since 0.1.0
@@ -85,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * <p>
      * Initializes the filter with the necessary services for JWT validation and user details
      * loading. Also configures the request matcher for excluded paths based on the JWT properties.
-     * </p>
+     * 
      *
      * @param jwtTokenService   The service for validating and processing JWT tokens
      * @param jwtProperties     The configuration properties for JWT authentication
@@ -115,7 +114,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      *   <li>JWT authentication is disabled in the properties</li>
      *   <li>The request path matches one of the excluded paths</li>
      * </ul>
-     * </p>
+     * 
      *
      * @param request The HTTP request
      * @return true if the filter should not be applied, false otherwise
@@ -135,10 +134,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      *   <li>Sets up the authentication context if the token is valid</li>
      *   <li>Continues the filter chain regardless of authentication result</li>
      * </ol>
-     * </p>
+     *
      * <p>
      * If token validation fails, the request continues without authentication.
-     * </p>
+     *
      *
      * @param request The HTTP request
      * @param response The HTTP response
@@ -171,7 +170,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Looks for the token in the request header specified by the JWT properties.
      * The token is expected to have a prefix (e.g., "Bearer ") which is removed
      * before returning the token.
-     * </p>
      *
      * @param request The HTTP request
      * @return The JWT token string, or null if no token is found
@@ -194,11 +192,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      *   <li>Creates an authentication token with the user details and authorities</li>
      *   <li>Sets the authentication in the SecurityContextHolder</li>
      * </ol>
-     * </p>
+     *
      * <p>
      * If the user is not found in the UserDetailsService, falls back to using
      * the authorities from the token's claims.
-     * </p>
      *
      * @param jwtToken The validated JWT token
      */

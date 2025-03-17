@@ -22,12 +22,12 @@ package dev.scisse.jwt.service;
  * be considered valid, even if they haven't expired yet. This is typically used for
  * implementing logout functionality, handling security breaches, or revoking access
  * for specific users.
- * </p>
+ * 
  * <p>
  * The blacklist is typically implemented as a temporary storage that keeps tokens
  * only until their original expiration time. This prevents the blacklist from growing
  * indefinitely while still ensuring that revoked tokens cannot be used.
- * </p>
+ * 
  * <p>
  * Implementations of this interface should consider:
  * <ul>
@@ -36,7 +36,6 @@ package dev.scisse.jwt.service;
  *   <li>Cleanup mechanisms to remove expired tokens from the blacklist</li>
  *   <li>Persistence across application restarts (if required)</li>
  * </ul>
- * </p>
  * 
  * @author Seydou CISSE
  * @since 0.1.0
@@ -51,11 +50,10 @@ public interface TokenBlacklistService {
      * Once a token is blacklisted, it should be considered invalid for authentication
      * purposes, even if it hasn't expired yet. The token will remain in the blacklist
      * until its original expiration time.
-     * </p>
+     * 
      * <p>
      * Implementations should ensure that blacklisted tokens are stored efficiently
      * and that expired tokens are eventually removed from the blacklist.
-     * </p>
      *
      * @param token The JWT token string to blacklist
      * @param expirationTime The token's expiration time in milliseconds since epoch
@@ -67,11 +65,10 @@ public interface TokenBlacklistService {
      * <p>
      * This method is called during token validation to determine if a token
      * has been explicitly invalidated.
-     * </p>
+     * 
      * <p>
      * Implementations should optimize this method for performance, as it will be
      * called frequently during token validation.
-     * </p>
      *
      * @param token The JWT token string to check
      * @return true if the token is blacklisted and should be considered invalid,

@@ -22,12 +22,11 @@ package dev.scisse.jwt.exception;
  * expiration date has passed. It is a specific type of {@link JwtException}
  * that allows applications to handle expired tokens differently from
  * other JWT validation errors.
- * </p>
+ * 
  * <p>
  * This exception is typically caught in authentication filters or token
  * validation services to provide appropriate responses for expired tokens,
  * such as prompting for re-authentication or attempting a token refresh.
- * </p>
  * 
  * @author Seydou CISSE
  * @since 0.1.0

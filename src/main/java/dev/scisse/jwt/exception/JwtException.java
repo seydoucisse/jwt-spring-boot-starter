@@ -21,7 +21,7 @@ package dev.scisse.jwt.exception;
  * This exception is thrown when there are issues with JWT token generation,
  * validation, or processing. It serves as the parent class for more specific
  * JWT exceptions like {@link TokenExpiredException}.
- * </p>
+ * 
  * <p>
  * Common scenarios where this exception might be thrown include:
  * <ul>
@@ -31,11 +31,11 @@ package dev.scisse.jwt.exception;
  *   <li>Token blacklisting</li>
  *   <li>Other JWT processing errors</li>
  * </ul>
- * </p>
+ * 
  * <p>
  * This exception extends {@link RuntimeException}, making it an unchecked
  * exception that doesn't require explicit handling in method signatures.
- * </p>
+ * 
  * 
  * @author Seydou CISSE
  * @since 0.1.0

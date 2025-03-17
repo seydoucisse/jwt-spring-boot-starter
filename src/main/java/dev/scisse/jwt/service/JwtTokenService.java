@@ -15,11 +15,11 @@
  */
 package dev.scisse.jwt.service;
 
-import java.util.Map;
-
 import dev.scisse.jwt.exception.JwtException;
 import dev.scisse.jwt.exception.TokenExpiredException;
 import dev.scisse.jwt.model.JwtToken;
+
+import java.util.Map;
 
 /**
  * Service interface for JWT token operations.
@@ -28,7 +28,7 @@ import dev.scisse.jwt.model.JwtToken;
  * and information extraction operations. Implementations of this interface
  * handle the creation of JWT tokens with claims, validation of tokens,
  * and extraction of information from tokens.
- * </p>
+ * 
  * <p>
  * The service provides methods to:
  * <ul>
@@ -38,11 +38,10 @@ import dev.scisse.jwt.model.JwtToken;
  *   <li>Refresh tokens to extend their validity</li>
  *   <li>Invalidate tokens by adding them to a blacklist</li>
  * </ul>
- * </p>
+ * 
  * <p>
  * This service is a core component of the JWT authentication system and is typically
  * used by authentication filters, controllers, and other security-related components.
- * </p>
  *
  * @author Seydou CISSE
  * @since 0.1.0
@@ -59,7 +58,7 @@ public interface JwtTokenService {
      * Creates a new JWT token with the specified subject and additional claims.
      * The token will include standard claims like issuedAt and expiration based
      * on the configuration.
-     * </p>
+     * 
      * <p>
      * The generated token includes:
      * <ul>
@@ -68,7 +67,6 @@ public interface JwtTokenService {
      *   <li>Standard claims like issuedAt, expiration, and issuer</li>
      *   <li>A digital signature created using the configured secret key</li>
      * </ul>
-     * </p>
      *
      * @param subject The subject of the token (usually a username or user ID)
      * @param claims Additional claims to include in the token
@@ -82,11 +80,10 @@ public interface JwtTokenService {
      * <p>
      * Creates a new JWT token with only the specified subject and standard claims
      * like issuedAt and expiration based on the configuration.
-     * </p>
+     * 
      * <p>
      * This is a convenience method that calls {@link #generateToken(String, Map)}
      * with an empty claims map.
-     * </p>
      *
      * @param subject The subject of the token (usually a username or user ID)
      * @return A JwtToken object containing the token string and its metadata
@@ -99,7 +96,7 @@ public interface JwtTokenService {
      * <p>
      * Validates the token's signature, expiration, and other criteria.
      * If the token is valid, returns a JwtToken object with the token's information.
-     * </p>
+     * 
      * <p>
      * The validation process includes:
      * <ul>
@@ -108,7 +105,6 @@ public interface JwtTokenService {
      *   <li>Checking if the token has expired</li>
      *   <li>Extracting the token's claims and metadata</li>
      * </ul>
-     * </p>
      *
      * @param token The JWT token string to validate
      * @return A JwtToken object containing the token and its metadata
@@ -125,11 +121,10 @@ public interface JwtTokenService {
      * <p>
      * This method extracts and returns the subject claim from the token
      * without performing full token validation.
-     * </p>
+     * 
      * <p>
      * Note that this method does not verify if the token is expired or blacklisted.
      * It only extracts the subject from the token's payload.
-     * </p>
      *
      * @param token The JWT token string
      * @return The subject of the token
@@ -141,11 +136,10 @@ public interface JwtTokenService {
      * Check if a JWT token is expired.
      * <p>
      * Determines if the token's expiration date has passed.
-     * </p>
+     * 
      * <p>
      * This method compares the token's expiration date with the current date
      * to determine if the token has expired.
-     * </p>
      *
      * @param token The JWT token string
      * @return true if the token is expired, false otherwise
@@ -159,14 +153,13 @@ public interface JwtTokenService {
      * Creates a new token with the same subject and claims as the original token,
      * but with a new expiration date. The original token may be invalidated depending
      * on the implementation.
-     * </p>
+     * 
      * <p>
      * This method can handle two scenarios:
      * <ul>
      *   <li>If the token is still valid, it creates a new token with the same claims</li>
      *   <li>If the token is expired but within the refresh window, it still allows refreshing</li>
      * </ul>
-     * </p>
      *
      * @param token The JWT token string to refresh
      * @return A new JwtToken object with extended expiration
@@ -183,11 +176,10 @@ public interface JwtTokenService {
      * <p>
      * Once a token is invalidated, it can no longer be used for authentication
      * even if it hasn't expired yet.
-     * </p>
+     * 
      * <p>
      * This method is typically used for logout operations or when a security
      * breach is detected.
-     * </p>
      *
      * @param token The token to invalidate
      * @see dev.scisse.jwt.service.TokenBlacklistService

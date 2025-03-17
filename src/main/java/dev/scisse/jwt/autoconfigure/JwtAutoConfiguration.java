@@ -15,8 +15,11 @@
  */
 package dev.scisse.jwt.autoconfigure;
 
-import java.util.Objects;
-
+import dev.scisse.jwt.config.JwtProperties;
+import dev.scisse.jwt.filter.JwtAuthenticationFilter;
+import dev.scisse.jwt.service.JwtTokenService;
+import dev.scisse.jwt.service.TokenBlacklistService;
+import dev.scisse.jwt.service.impl.JwtTokenServiceImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,14 +36,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import dev.scisse.jwt.config.JwtProperties;
-import dev.scisse.jwt.filter.JwtAuthenticationFilter;
-import dev.scisse.jwt.service.JwtTokenService;
-import dev.scisse.jwt.service.TokenBlacklistService;
-import dev.scisse.jwt.service.impl.JwtTokenServiceImpl;
+import java.util.Objects;
 
 /**
- * Auto-configuration for JWT authentication.
+ * Autoconfiguration for JWT authentication.
  * <p>
  * This class automatically configures JWT components when the starter is
  * included in a Spring Boot application. It provides the necessary beans for
@@ -50,22 +49,22 @@ import dev.scisse.jwt.service.impl.JwtTokenServiceImpl;
  *   <li>JwtAuthenticationFilter - for processing JWT tokens in HTTP requests</li>
  *   <li>SecurityFilterChain - for configuring Spring Security with JWT support</li>
  * </ul>
- * </p>
+ *
  * <p>
- * The auto-configuration is conditionally applied based on:
+ * The autoconfiguration is conditionally applied based on:
  * <ul>
  *   <li>The presence of JwtTokenService class in the classpath</li>
  *   <li>The 'jwt.enabled' property (defaults to true if not specified)</li>
  *   <li>Whether the application is a web application</li>
  * </ul>
- * </p>
+ *
  * <p>
  * Required properties:
  * <ul>
  *   <li>jwt.secret - The secret key used for signing JWT tokens</li>
  *   <li>jwt.issuer - The issuer claim to include in JWT tokens</li>
  * </ul>
- * </p>
+ *
  * 
  * @author Seydou CISSE
  * @since 0.1.0
@@ -84,7 +83,7 @@ public class JwtAutoConfiguration {
      * <p>
      * This method creates and configures a JwtTokenServiceImpl instance
      * using the provided JWT properties and token blacklist service.
-     * </p>
+     * 
      * <p>
      * The method validates that the required properties are set:
      * <ul>
@@ -92,12 +91,12 @@ public class JwtAutoConfiguration {
      *   <li>jwt.issuer - Must be non-null and non-empty</li>
      * </ul>
      * If these properties are not set, an IllegalArgumentException is thrown.
-     * </p>
+     *
      * <p>
      * This bean is only created if no other JwtTokenService bean exists in the
      * application context, allowing applications to provide their own implementation
      * if needed.
-     * </p>
+     *
      *
      * @param jwtProperties JWT configuration properties
      * @param tokenBlacklistService Token blacklist service for invalidating tokens
@@ -127,14 +126,14 @@ public class JwtAutoConfiguration {
      * This filter intercepts HTTP requests and extracts JWT tokens from request headers.
      * It validates the tokens and sets up the Spring Security authentication context
      * based on the token's claims.
-     * </p>
+     *
      * <p>
      * This bean is conditionally created based on:
      * <ul>
      *   <li>The 'jwt.enabled' property being true (default is true)</li>
      *   <li>The application being a web application</li>
      * </ul>
-     * </p>
+     *
      *
      * @param jwtTokenService JWT token service for validating tokens
      * @param jwtProperties JWT configuration properties
@@ -164,7 +163,7 @@ public class JwtAutoConfiguration {
      *   <li>Sets up stateless session management</li>
      *   <li>Adds the JWT authentication filter before the UsernamePasswordAuthenticationFilter</li>
      * </ul>
-     * </p>
+     *
      * <p>
      * This configuration is optional and will only be applied if:
      * <ul>
@@ -174,7 +173,7 @@ public class JwtAutoConfiguration {
      *   <li>No other SecurityFilterChain bean exists in the application context</li>
      * </ul>
      * This allows applications to provide their own security configuration if needed.
-     * </p>
+     *
      *
      * @param http HttpSecurity to configure
      * @param jwtAuthenticationFilter JWT authentication filter

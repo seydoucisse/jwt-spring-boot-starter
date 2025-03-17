@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * and periodically cleans up expired tokens to prevent memory leaks. It provides
  * a simple and efficient way to invalidate JWT tokens without requiring external
  * storage or persistence.
- * </p>
+ *
  * <p>
  * Key features:
  * <ul>
@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <li>Efficient token lookup during validation</li>
  *   <li>Low memory footprint for typical usage patterns</li>
  * </ul>
- * </p>
+ *
  * <p>
  * Limitations :
  * <ul>
@@ -51,13 +51,12 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <li>Not suitable for distributed environments without additional synchronization</li>
  *   <li>Memory usage scales with the number of blacklisted tokens</li>
  * </ul>
- * </p>
+ *
  * <p>
  * This is a fallback implementation that will only be used if no other
  * TokenBlacklistService bean is provided by the user. Applications requiring
  * persistence or distributed token blacklisting should provide their own
  * implementation of the TokenBlacklistService interface.
- * </p>
  * 
  * @author Seydou CISSE
  * @since 0.1.0
@@ -77,7 +76,6 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
      * The key is the token string, and the value is the expiration time in milliseconds
      * since epoch. ConcurrentHashMap is used to ensure thread safety for concurrent
      * access from multiple requests.
-     * </p>
      */
     private final Map<String, Long> blacklistedTokens = new ConcurrentHashMap<>();
     
@@ -86,7 +84,6 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
      * <p>
      * The token will remain in the blacklist until its original expiration time
      * or until it is removed by the cleanup task.
-     * </p>
      *
      * @param token The JWT token string to blacklist
      * @param expirationTime The token's expiration time in milliseconds since epoch
@@ -102,7 +99,6 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
      * <p>
      * This method also performs cleanup of expired tokens when they are accessed,
      * which helps to keep the blacklist size manageable between scheduled cleanups.
-     * </p>
      * <p>
      * The method follows these steps:
      * <ol>
@@ -111,7 +107,6 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
      *   <li>If expired, remove it from the blacklist and return false</li>
      *   <li>If not expired, return true (token is blacklisted)</li>
      * </ol>
-     * </p>
      *
      * @param token The JWT token string to check
      * @return true if the token is blacklisted and not expired, false otherwise
@@ -139,7 +134,7 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
      * This method periodically removes all expired tokens from the blacklist
      * to prevent memory leaks. The cleanup interval is configured via the
      * {@code jwt.blacklistedCleanupIntervalMs} property.
-     * </p>
+     *
      * <p>
      * The cleanup process:
      * <ol>
@@ -148,7 +143,7 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
      *   <li>Removes entries where the expiration time is before the current time</li>
      *   <li>Logs the number of remaining tokens after cleanup</li>
      * </ol>
-     * </p>
+     *
      */
     @Scheduled(fixedRateString = "${jwt.blacklisted-cleanup-interval-ms}")
     public void cleanupExpiredTokens() {
