@@ -1,5 +1,31 @@
 package dev.scisse.jwt.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.crypto.SecretKey;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import dev.scisse.jwt.config.JwtProperties;
 import dev.scisse.jwt.exception.JwtException;
 import dev.scisse.jwt.exception.TokenExpiredException;
@@ -7,21 +33,6 @@ import dev.scisse.jwt.model.JwtToken;
 import dev.scisse.jwt.service.TokenBlacklistService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JwtTokenServiceImplTest {
@@ -29,7 +40,7 @@ class JwtTokenServiceImplTest {
     @Mock
     private TokenBlacklistService tokenBlacklistService;
 
-    private final JwtProperties jwtProperties = new JwtProperties();
+    private JwtProperties jwtProperties;
 
     private JwtTokenServiceImpl jwtTokenService;
 
@@ -39,10 +50,23 @@ class JwtTokenServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        jwtProperties.setSecret("A".repeat(64));
-        jwtProperties.setExpirationMs(3600000L); // 1 hour
-        jwtProperties.setIssuer("jwt-starter-test");
-        SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+        String secret = "A".repeat(64);
+        long expirationMs = 3600000L; // 1 hour
+        String issuer = "jwt-starter-test";
+        
+        jwtProperties = new JwtProperties(
+            secret,
+            expirationMs,
+            0,
+            0,
+            issuer,
+            null,
+            true,
+            "Authorization",
+            "Bearer "
+        );
+        
+        SecretKey key = Keys.hmacShaKeyFor(jwtProperties.secret().getBytes(StandardCharsets.UTF_8));
 
         jwtTokenService = new JwtTokenServiceImpl(jwtProperties, tokenBlacklistService);
         
@@ -53,7 +77,7 @@ class JwtTokenServiceImplTest {
                 .subject(subject)
                 .issuedAt(now)
                 .expiration(expiry)
-                .issuer(jwtProperties.getIssuer())
+                .issuer(jwtProperties.issuer())
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
         
@@ -62,7 +86,7 @@ class JwtTokenServiceImplTest {
                 .subject(subject)
                 .issuedAt(pastDate)
                 .expiration(new Date(pastDate.getTime() + 10000))
-                .issuer(jwtProperties.getIssuer())
+                .issuer(jwtProperties.issuer())
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }

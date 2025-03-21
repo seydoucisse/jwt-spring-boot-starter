@@ -15,16 +15,15 @@
  */
 package dev.scisse.jwt.service.impl;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import dev.scisse.jwt.service.TokenBlacklistService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import dev.scisse.jwt.service.TokenBlacklistService;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * In-memory implementation of the TokenBlacklistService.
@@ -130,23 +129,13 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
      * <p>
      * This method periodically removes all expired tokens from the blacklist
      * to prevent memory leaks. The cleanup interval is configured via the
-     * {@code jwt.blacklistedCleanupIntervalMs} property.
-     *
-     * <p>
-     * The cleanup process:
-     * <ol>
-     *   <li>Gets the current time</li>
-     *   <li>Iterates through all entries in the blacklist</li>
-     *   <li>Removes entries where the expiration time is before the current time</li>
-     *   <li>Logs the number of remaining tokens after cleanup</li>
-     * </ol>
-     *
+     * {@code jwt.blacklisted-cleanup-interval-ms} property.
      */
     @Scheduled(fixedRateString = "${jwt.blacklisted-cleanup-interval-ms}")
     public void cleanupExpiredTokens() {
         logger.debug("Cleaning up expired blacklisted tokens");
+
         long currentTime = System.currentTimeMillis();
-        
         blacklistedTokens.entrySet().removeIf(entry -> currentTime > entry.getValue());
         
         logger.debug("Blacklist cleanup completed. Remaining tokens: {}", blacklistedTokens.size());

@@ -15,6 +15,16 @@
  */
 package dev.scisse.jwt.service.impl;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.crypto.SecretKey;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import dev.scisse.jwt.config.JwtProperties;
 import dev.scisse.jwt.exception.JwtException;
 import dev.scisse.jwt.exception.TokenExpiredException;
@@ -26,14 +36,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Default implementation of the JwtTokenService interface.
@@ -84,7 +86,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
      */
     public JwtTokenServiceImpl(JwtProperties jwtProperties, TokenBlacklistService tokenBlacklistService) {
         this.jwtProperties = jwtProperties;
-        this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
+        this.key = Keys.hmacShaKeyFor(jwtProperties.secret().getBytes());
         this.tokenBlacklistService = tokenBlacklistService;
     }
 
@@ -106,7 +108,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     public JwtToken generateToken(String subject, Map<String, Object> claims) {
         logger.debug("Generating token for subject: {}", subject);
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtProperties.getExpirationMs());
+        Date expiryDate = new Date(now.getTime() + jwtProperties.expirationMs());
         
         Map<String, Object> allClaims = new HashMap<>(claims);
         
@@ -115,7 +117,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                 .subject(subject)
                 .issuedAt(now)
                 .expiration(expiryDate)
-                .issuer(jwtProperties.getIssuer())
+                .issuer(jwtProperties.issuer())
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
         
@@ -229,7 +231,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             try {
                 claims = Jwts.parser()
                         .verifyWith(key)
-                        .clockSkewSeconds(jwtProperties.getRefreshWindowMs())
+                        .clockSkewSeconds(jwtProperties.refreshWindowMs())
                         .build()
                         .parseSignedClaims(token)
                         .getPayload();
@@ -241,7 +243,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             Date now = new Date();
             
             // Use the refresh window from properties
-            if (now.getTime() - expiration.getTime() <= jwtProperties.getRefreshWindowMs()) {
+            if (now.getTime() - expiration.getTime() <= jwtProperties.refreshWindowMs()) {
                 return generateToken(claims.getSubject(), new HashMap<>(claims));
             }
             

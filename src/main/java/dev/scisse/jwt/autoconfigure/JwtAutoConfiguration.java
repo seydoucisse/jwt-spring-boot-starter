@@ -132,11 +132,11 @@ public class JwtAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public JwtTokenService jwtTokenService(JwtProperties jwtProperties, TokenBlacklistService tokenBlacklistService) {
-        if (Objects.isNull(jwtProperties.getSecret()) || jwtProperties.getSecret().trim().isEmpty()) {
+        if (Objects.isNull(jwtProperties.secret()) || jwtProperties.secret().trim().isEmpty()) {
             throw new IllegalArgumentException("JWT secret is required. Please set 'jwt.secret' in your application properties.");
         }
 
-        if (Objects.isNull(jwtProperties.getIssuer()) || jwtProperties.getIssuer().trim().isEmpty()) {
+        if (Objects.isNull(jwtProperties.issuer()) || jwtProperties.issuer().trim().isEmpty()) {
             throw new IllegalArgumentException("JWT issuer is required. Please set 'jwt.issuer' in your application properties.");
         }
 

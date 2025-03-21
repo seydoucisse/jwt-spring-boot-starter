@@ -15,14 +15,11 @@
  */
 package dev.scisse.jwt.filter;
 
-import dev.scisse.jwt.config.JwtProperties;
-import dev.scisse.jwt.model.JwtToken;
-import dev.scisse.jwt.service.JwtTokenService;
-import jakarta.annotation.Nonnull;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,10 +30,14 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import dev.scisse.jwt.config.JwtProperties;
+import dev.scisse.jwt.model.JwtToken;
+import dev.scisse.jwt.service.JwtTokenService;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Filter for JWT authentication in Spring Security.
@@ -100,7 +101,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         this.userDetailsService = userDetailsService;
         this.excludedPaths = new OrRequestMatcher(
-                Arrays.stream(jwtProperties.getExcludedPaths())
+                Arrays.stream(jwtProperties.excludedPaths())
                         .map(AntPathRequestMatcher::new)
                         .collect(Collectors.toList())
         );
@@ -121,7 +122,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected boolean shouldNotFilter(@Nonnull HttpServletRequest request) {
-        return !jwtProperties.isEnabled() || excludedPaths.matches(request);
+        return !jwtProperties.enabled() || excludedPaths.matches(request);
     }
 
     /**
@@ -175,9 +176,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @return The JWT token string, or null if no token is found
      */
     private String extractToken(HttpServletRequest request) {
-        String header = request.getHeader(jwtProperties.getHeaderName());
-        if (Objects.nonNull(header) && header.startsWith(jwtProperties.getTokenPrefix())) {
-            return header.substring(jwtProperties.getTokenPrefix().length());
+        String header = request.getHeader(jwtProperties.headerName());
+        if (Objects.nonNull(header) && header.startsWith(jwtProperties.tokenPrefix())) {
+            return header.substring(jwtProperties.tokenPrefix().length());
         }
         return null;
     }
