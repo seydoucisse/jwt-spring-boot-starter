@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -160,6 +161,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Token validation failed, continue without authentication
                 logger.debug("JWT token validation failed: " + e.getMessage());
             }
+        } else {
+            logger.debug("No JWT token found in request");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getWriter().write("{\"error\": \"Access denied: No authentication token provided\"}");
+            return;
         }
 
         filterChain.doFilter(request, response);
