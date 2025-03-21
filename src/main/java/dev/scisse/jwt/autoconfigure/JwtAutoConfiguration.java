@@ -19,6 +19,7 @@ import dev.scisse.jwt.config.JwtProperties;
 import dev.scisse.jwt.filter.JwtAuthenticationFilter;
 import dev.scisse.jwt.service.JwtTokenService;
 import dev.scisse.jwt.service.TokenBlacklistService;
+import dev.scisse.jwt.service.impl.InMemoryTokenBlacklistService;
 import dev.scisse.jwt.service.impl.JwtTokenServiceImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -77,6 +78,28 @@ import java.util.Objects;
 @ConditionalOnClass(JwtTokenService.class)
 @EnableScheduling
 public class JwtAutoConfiguration {
+
+    /**
+     * Creates a default TokenBlacklistService bean if one doesn't exist.
+     * <p>
+     * This method provides an in-memory implementation of the TokenBlacklistService
+     * that stores blacklisted tokens in a thread-safe map and periodically cleans up
+     * expired tokens.
+     * 
+     * <p>
+     * This bean is only created if no other TokenBlacklistService bean exists in the
+     * application context, allowing applications to provide their own implementation
+     * if needed.
+     *
+     * @return InMemoryTokenBlacklistService implementation
+     * @see dev.scisse.jwt.service.TokenBlacklistService
+     * @see dev.scisse.jwt.service.impl.InMemoryTokenBlacklistService
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public TokenBlacklistService tokenBlacklistService() {
+        return new InMemoryTokenBlacklistService();
+    }
 
     /**
      * Creates a JwtTokenService bean if one doesn't exist.

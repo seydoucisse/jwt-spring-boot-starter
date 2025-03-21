@@ -15,17 +15,16 @@
  */
 package dev.scisse.jwt.service.impl;
 
-import dev.scisse.jwt.service.TokenBlacklistService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import dev.scisse.jwt.service.TokenBlacklistService;
 
 /**
  * In-memory implementation of the TokenBlacklistService.
@@ -64,8 +63,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see org.springframework.scheduling.annotation.Scheduled
  */
 @Service
-@ConditionalOnMissingBean(TokenBlacklistService.class)
-@Primary
 public class InMemoryTokenBlacklistService implements TokenBlacklistService {
     
     private static final Logger logger = LoggerFactory.getLogger(InMemoryTokenBlacklistService.class);
