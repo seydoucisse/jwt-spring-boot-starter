@@ -30,8 +30,6 @@ class JwtTokenServiceImplTest {
     @Mock
     private TokenBlacklistService tokenBlacklistService;
 
-    private JwtProperties jwtProperties;
-
     private JwtTokenServiceImpl jwtTokenService;
 
     private static String validToken;
@@ -44,7 +42,7 @@ class JwtTokenServiceImplTest {
         Duration expirationDuration = Duration.ofHours(1);
         String issuer = "jwt-starter-test";
 
-        jwtProperties = new JwtProperties(
+        JwtProperties jwtProperties = new JwtProperties(
                 secret,
                 expirationDuration,
                 Duration.ofMinutes(5),
