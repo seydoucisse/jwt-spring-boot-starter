@@ -131,7 +131,7 @@ public class InMemoryTokenBlacklistService implements TokenBlacklistService {
      * to prevent memory leaks. The cleanup interval is configured via the
      * {@code jwt.blacklisted-cleanup-interval-ms} property.
      */
-    @Scheduled(fixedRateString = "#{@'jwt-dev.scisse.jwt.config.JwtProperties'.blacklistedCleanupIntervalMs}")
+    @Scheduled(fixedRateString = "#{@'jwt-dev.scisse.jwt.config.JwtProperties'.blacklistedCleanupInterval}")
     public void cleanupExpiredTokens() {
         logger.info("Cleaning up expired blacklisted tokens");
 

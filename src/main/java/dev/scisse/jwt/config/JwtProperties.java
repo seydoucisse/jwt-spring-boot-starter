@@ -15,8 +15,14 @@
  */
 package dev.scisse.jwt.config;
 
+import jakarta.annotation.Nonnull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.boot.convert.DurationUnit;
+import org.springframework.validation.annotation.Validated;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Configuration properties for JWT authentication.
@@ -52,6 +58,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  * @since 0.1.0
  * @see dev.scisse.jwt.autoconfigure.JwtAutoConfiguration
  */
+@Validated
 @ConfigurationProperties(prefix = "jwt")
 public record JwtProperties(
     /*
@@ -70,8 +77,9 @@ public record JwtProperties(
      * <p>
      * Default: 24 hours (86,400,000 milliseconds)
      */
-    @DefaultValue("86400000")
-    long expirationMs,
+    @DurationUnit(ChronoUnit.SECONDS)
+    @DefaultValue("1d")
+    Duration expirationDuration,
 
     /*
      * Refresh window time in milliseconds.
@@ -83,8 +91,9 @@ public record JwtProperties(
      * <p>
      * Default: 5 minutes (300,000 milliseconds)
      */
-    @DefaultValue("300000")
-    long refreshWindowMs,
+    @DurationUnit(ChronoUnit.SECONDS)
+    @DefaultValue("5m")
+    Duration refreshWindowDuration,
 
     /*
      * Interval for cleaning up blacklisted tokens in milliseconds.
@@ -95,8 +104,9 @@ public record JwtProperties(
      * <p>
      * Default: 10 minutes (600,000 milliseconds)
      */
-    @DefaultValue("600000")
-    long blacklistedCleanupIntervalMs,
+    @DurationUnit(ChronoUnit.SECONDS)
+    @DefaultValue("10m")
+    Duration blacklistedCleanupInterval,
     
     /*
      * Token issuer.
@@ -107,6 +117,7 @@ public record JwtProperties(
      * <p>
      * This property is mandatory and must be specified in your configuration.
      */
+    @Nonnull
     String issuer,
     
     /*
@@ -158,28 +169,4 @@ public record JwtProperties(
     @DefaultValue("Bearer ")
     String tokenPrefix
 ) {
-    /**
-     * Default constructor with default values for optional properties.
-     * Required for Spring Boot property binding.
-     */
-    public JwtProperties {
-        if (expirationMs == 0) {
-            expirationMs = 24 * 60 * 60 * 1000L; // 24 hours
-        }
-        if (refreshWindowMs == 0) {
-            refreshWindowMs = 5 * 60 * 1000L; // 5 minutes
-        }
-        if (blacklistedCleanupIntervalMs == 0) {
-            blacklistedCleanupIntervalMs = 10 * 60 * 1000L; // 10 minutes
-        }
-        if (excludedPaths == null) {
-            excludedPaths = new String[]{"/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**"};
-        }
-        if (headerName == null) {
-            headerName = "Authorization";
-        }
-        if (tokenPrefix == null) {
-            tokenPrefix = "Bearer ";
-        }
-    }
 }

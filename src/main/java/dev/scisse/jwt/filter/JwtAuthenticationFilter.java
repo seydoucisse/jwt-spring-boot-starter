@@ -162,10 +162,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.debug("JWT token validation failed: " + e.getMessage());
             }
         } else {
+            // No token found, but we should only block if this is a protected path
+            // For excluded paths, the shouldNotFilter method will prevent this code from running
             logger.debug("No JWT token found in request");
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 is more appropriate than 403 here
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.getWriter().write("{\"error\": \"Access denied: No authentication token provided\"}");
+            response.getWriter().write("{\"error\": \"Unauthorized: No authentication token provided\"}");
             return;
         }
 
