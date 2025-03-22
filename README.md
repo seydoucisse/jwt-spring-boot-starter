@@ -63,9 +63,10 @@ jwt.secret=yourSecretKey     # REQUIRED: Secret key used for signing JWT tokens 
 jwt.issuer=your-app          # REQUIRED: Issuer of the JWT tokens
 
 # Optional JWT Configuration
-jwt.expiration-ms=86400000   # Optional: Token expiration time in milliseconds (default: 24 hours)
-jwt.blacklisted-cleanup-interval-ms=600000  # Optional: Interval for cleaning up blacklisted tokens in milliseconds (default: 10 minutes)
-jwt.excluded-paths=/api/public/**,/swagger-ui/**  # Optional: Paths to exclude from JWT authentication
+jwt.expiration-duration=1d   # Optional: Token expiration time (default: 1 day)
+jwt.refresh-window-duration=5m  # Optional: Window for refreshing expired tokens (default: 5 minutes)
+jwt.blacklisted-cleanup-interval=10m  # Optional: Interval for cleaning up blacklisted tokens (default: 10 minutes)
+jwt.excluded-paths=/api/auth/**,/swagger-ui/**,/v3/api-docs/**  # Optional: Paths to exclude from JWT authentication
 jwt.enabled=true             # Optional: Whether to enable JWT authentication
 jwt.header-name=Authorization # Optional: Header name for the JWT token
 jwt.token-prefix=Bearer      # Optional: Token prefix in the Authorization header

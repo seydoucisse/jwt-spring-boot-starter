@@ -74,10 +74,10 @@ The starter can be configured with the following properties:
 
 - `jwt.enabled`: Whether to enable JWT authentication. Default: `true`.
 - `jwt.secret`: The secret key used to sign and verify JWT tokens. (Minimum 64 characters)
-- `jwt.expiration-ms`: The expiration time of JWT tokens in milliseconds. Default: `86400000` (24 hours).
+- `jwt.expiration-duration`: The expiration time of JWT tokens in milliseconds. Default: `1d` (1 day).
 - `jwt.issuer`: The issuer of JWT tokens.
-- `jwt.refresh-window-ms`: The refresh window time in milliseconds. Default: `300000` (5 mins).
-- `jwt.blacklisted-cleanup-interval-ms`: The interval for cleaning up blacklisted tokens in milliseconds. Default: `600000` (10 mins).
+- `jwt.refresh-window-duration`: The refresh window time in milliseconds. Default: `5m` (5 minutes).
+- `jwt.blacklisted-cleanup-interval`: The interval for cleaning up blacklisted tokens in milliseconds. Default: `5m` (5 minutes).
 - `jwt.excluded-paths`: The paths to exclude from JWT authentication. Default: `/api/auth/**`, `/swagger-ui/**`, `/v3/api-docs/**`.
 - `jwt.token-prefix`: The prefix for JWT tokens. Default: `Bearer `.
 - `jwt.token-header`: The header name for JWT tokens. Default: `Authorization`.
@@ -98,7 +98,7 @@ The JwtTokenService provides methods for JWT token operations:
 
 The TokenBlacklistService manages revoked tokens:
 
-- `blacklistToken(String token, long expirationTime)` : Add a token to the blacklist
+- `blacklistToken(String token, long expirationDuration)` : Add a token to the blacklist
 - `isBlacklisted(String token)` : Check if a token is blacklisted
 By default, an in-memory implementation is provided, but you can create your own implementation by implementing the TokenBlacklistService interface.
 
@@ -223,10 +223,10 @@ public class JpaTokenBlacklistService implements TokenBlacklistService {
     }
     
     @Override
-    public void blacklistToken(String token, long expirationTime) {
+    public void blacklistToken(String token, long expirationDuration) {
         BlacklistedToken blacklistedToken = new BlacklistedToken();
         blacklistedToken.setToken(token);
-        blacklistedToken.setExpirationTime(expirationTime);
+        blacklistedToken.setExpirationTime(expirationDuration);
         tokenRepository.save(blacklistedToken);
     }
     
