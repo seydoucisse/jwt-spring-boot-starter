@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Spring Boot Starter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.min.css"
+        integrity="sha256-ko4j5rn874LF8dHwW29/xabhh8YBleWfvxb8nQce4Fc=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.css"
+        integrity="sha256-jsQbSO1yj62eu6dP6f2fJESRgkHNNEpxrK8NnO6/oyc=" crossorigin="anonymous">
+    <style>
+        :root {
+            --primary-color: #2980b9;
+            --secondary-color: #24292e;
+            --text-color: #2c3e50;
+            --background-color: #ffffff;
+            --code-background: #ecf0f1;
+            --border-color: #e1e4e8;
+            --warning-color: #f39c12;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+            margin: 0 auto;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 2rem;
+            width: min(90%, 900px);
+        }
+
+        .header {
+            text-align: center;
+            width: 100%;
+            margin-bottom: 3rem;
+            padding: 2.5rem;
+            background: #3498db  /*linear-gradient(to top, #09203f 0%, #537895 100%)*/;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            color: white;
+            border-bottom: none;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            max-width: 80%;
+            margin: 0 auto;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .language-xml,
+        .language-yaml,
+        .language-java {
+            color: #24292e;
+        }
+
+        .toc {
+            background-color: var(--code-background);
+            border-radius: 6px;
+            padding: 1.5rem;
+            padding-bottom: 0;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            border-bottom: none;
+            padding-bottom: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toc h2:after {
+            content: "▼";
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .toc.collapsed h2:after {
+            transform: rotate(-90deg);
+        }
+
+        .toc-content {
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            max-height: 1000px;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        .toc.collapsed .toc-content {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .toc ul {
+            margin-bottom: 0;
+        }
+
+        .toc ul ul {
+            margin-top: 0.3rem;
+        }
+
+        .toc li {
+            margin: 0.5rem 0;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        pre {
+            background-color: var(--code-background);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow: auto;
+            margin: 1rem 0;
+        }
+
+        code {
+            font-family: "JetBrains Mono", Consolas, "Liberation Mono", Menlo, monospace;
+            background-color: var(--code-background);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-size: 90%;
+        }
+
+        ul,
+        ol {
+            padding-left: 2rem;
+        }
+
+        li {
+            margin: 0.3rem 0;
+        }
+
+        .warning {
+            background-color: #fff8e1;
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>JWT Spring Boot Starter</h1>
+            <p>
+                A Spring Boot starter that provides a simple way to implement of JWT-based authentication in your applications.
+            </p>
+        </div>
+    </div>
+    <main>
+        <div class="container">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h2>Table of Contents</h2>
+                <div class="toc-content">
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#getting-started">Getting Started</a>
+                            <ul>
+                                <li><a href="#installation">Installation</a></li>
+                                <li><a href="#configuration">Configuration</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#configuration-properties">Configuration Properties</a></li>
+                        <li><a href="#core-components">Core Components</a>
+                            <ul>
+                                <li><a href="#jwttokenservice">JwtTokenService</a></li>
+                                <li><a href="#tokenblacklistservice">TokenBlacklistService</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#spring-security-integration">Spring Security Integration</a>
+                            <ul>
+                                <li><a href="#example-usage">Example Usage</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#exception-handling">Exception Handling</a></li>
+                        <li><a href="#advanced-usage">Advanced Usage</a>
+                            <ul>
+                                <li><a href="#custom-jwt-token-service">Custom JWT Token Service</a></li>
+                                <li><a href="#custom-security-configuration">Custom Security Configuration</a></li>
+                                <li><a href="#custom-token-blacklist-implementation">Custom Token Blacklist
+                                        Implementation</a></li>
+                                <li><a href="#custom-claims">Custom Claims</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#documentation">Documentation</a></li>
+                        <li><a href="#license">License</a></li>
+                    </ul>
+                </div>
+            </div>
+    
+            <h2 id="features">Features</h2>
+            <ul>
+                <li>Easy integration with Spring Security</li>
+                <li>Configurable JWT token generation and validation</li>
+                <li>Support for custom claims and token expiration</li>
+                <li>Automatic token refresh mechanism</li>
+                <li>Customizable authentication endpoints</li>
+                <li>Token blacklisting for invalidation</li>
+                <li>In-memory token blacklist implementation (with option to provide your own)</li>
+            </ul>
+    
+            <h2 id="getting-started">Getting Started</h2>
+    
+            <h3 id="installation">Installation</h3>
+            <p>Add the dependency to your <code>pom.xml</code>:</p>
+            <pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.github.seydoucisse&lt;/groupId&gt;
+    &lt;artifactId&gt;jwt-spring-boot-starter&lt;/artifactId&gt;
+    &lt;version&gt;0.1.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+    
+            <h3 id="configuration">Configuration</h3>
+            <ol>
+                <li>
+                    <p>Add required properties in <code>application.properties</code> or <code>application.yml</code>:</p>
+                    <ul>
+                        <li><code>jwt.secret</code>: Your JWT signing key</li>
+                        <li><code>jwt.issuer</code>: Your application name</li>
+                    </ul>
+                    <pre><code class="language-yaml">jwt:
+    secret: your_secret_key
+    issuer: your-app-issuer</code></pre>
+                </li>
+                <li>
+                    <p>Implement <code>UserDetailsService</code>:</p>
+                    <ul>
+                        <li>Create a service class that implements <code>UserDetailsService</code></li>
+                        <li>Override <code>loadUserByUsername()</code> method</li>
+                        <li>Connect to your user data source</li>
+                    </ul>
+                    <pre><code class="language-java">@Service
+public class MyUserDetailsService implements UserDetailsService {
+    
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // Load user from your database or other source
+        // Return a UserDetails implementation
+        // Throw UsernameNotFoundException if user not found
+    }
+}</code></pre>
+                </li>
+                <li>
+                    <p>Optional: Customize the configuration</p>
+                    <ul>
+                        <li>Override default JWT properties</li>
+                        <li>Implement custom security configuration</li>
+                        <li>Add custom token blacklist service</li>
+                    </ul>
+                </li>
+            </ol>
+    
+            <div class="warning">
+                <p><strong>⚠️ WARNING</strong>: You should define these two beans in a configuration class:
+                    <code>AuthenticationManager</code> and <code>PasswordEncoder</code>. For example:
+                </p>
+                <pre><code class="language-java">@Configuration
+public class SecurityConfig {
+    
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}</code></pre>
+            </div>
+    
+            <p>For detailed configuration options, see the <a href="#configuration-properties">Configuration Properties</a>
+                section below. For customization options, see the <a href="#advanced-usage">Advanced Usage</a> section.</p>
+    
+            <h2 id="configuration-properties">Configuration Properties</h2>
+            <p>The starter can be configured with the following properties:</p>
+            <ul>
+                <li><code>jwt.enabled</code>: Whether to enable JWT authentication. Default: <code>true</code>.</li>
+                <li><code>jwt.secret</code>: The secret key used to sign and verify JWT tokens. (Minimum 64 characters) HMAC
+                    using SHA-512 algorithm.</li>
+                <li><code>jwt.expiration-duration</code>: The expiration duration of JWT tokens. Default: <code>1d</code> (1
+                    day).</li>
+                <li><code>jwt.issuer</code>: The issuer of JWT tokens.</li>
+                <li><code>jwt.refresh-window-duration</code>: The refresh window duration. Default: <code>5m</code> (5
+                    minutes).</li>
+                <li><code>jwt.blacklisted-cleanup-interval</code>: The interval for cleaning up blacklisted tokens. Default:
+                    <code>5m</code> (5 minutes).
+                </li>
+                <li><code>jwt.excluded-paths</code>: The paths to exclude from JWT authentication. Default:
+                    <code>/api/auth/**</code>, <code>/swagger-ui/**</code>, <code>/v3/api-docs/**</code>.
+                </li>
+                <li><code>jwt.token-prefix</code>: The prefix for JWT tokens. Default: <code>Bearer </code>.</li>
+                <li><code>jwt.token-header</code>: The header name for JWT tokens. Default: <code>Authorization</code>.</li>
+            </ul>
+    
+            <h2 id="core-components">Core Components</h2>
+    
+            <h3 id="jwttokenservice">JwtTokenService</h3>
+            <p>The JwtTokenService provides methods for JWT token operations:</p>
+            <ul>
+                <li><code>generateToken(String subject)</code> : Generate a token for a subject</li>
+                <li><code>generateToken(String subject, Map&lt;String, Object&gt; claims)</code> : Generate a token with
+                    custom claims</li>
+                <li><code>validateToken(String token)</code> : Validate a token and return its details</li>
+                <li><code>refreshToken(String token)</code> : Generate a new token while invalidating the old one</li>
+                <li><code>getSubjectFromToken(String token)</code> : Extract the subject from a token</li>
+                <li><code>isTokenExpired(String token)</code> : Check if a token is expired</li>
+            </ul>
+    
+            <h3 id="tokenblacklistservice">TokenBlacklistService</h3>
+            <p>The TokenBlacklistService manages revoked tokens:</p>
+            <ul>
+                <li><code>blacklistToken(String token, long expirationDuration)</code> : Add a token to the blacklist</li>
+                <li><code>isBlacklisted(String token)</code> : Check if a token is blacklisted</li>
+            </ul>
+            <p>By default, an in-memory implementation is provided, but you can create your own implementation by
+                implementing the TokenBlacklistService interface.</p>
+    
+            <h2 id="spring-security-integration">Spring Security Integration</h2>
+            <p>The starter automatically configures Spring Security to use JWT authentication. To customize the security
+                configuration, you can extend the provided classes or create your own configuration.</p>
+    
+            <h3 id="example-usage">Example Usage</h3>
+            <p>Here's a simple example of how to use the JWT starter in your application:</p>
+            <pre><code class="language-java">@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+
+    private final JwtTokenService jwtTokenService;
+    private final AuthenticationManager authenticationManager;
+
+    public AuthController(JwtTokenService jwtTokenService, AuthenticationManager authenticationManager) {
+        this.jwtTokenService = jwtTokenService;
+        this.authenticationManager = authenticationManager;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity&lt;?&gt; login(@RequestBody LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                loginRequest.getUsername(),
+                loginRequest.getPassword()
+            )
+        );
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        
+        // Generate JWT token
+        Map&lt;String, Object&gt; claims = new HashMap&lt;&gt;();
+        claims.put("roles", authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList()));
+            
+        JwtToken token = jwtTokenService.generateToken(authentication.getName(), claims);
+        
+        return ResponseEntity.ok(new JwtResponse(token.getToken()));
+    }
+    
+    @PostMapping("/refresh")
+    public ResponseEntity&lt;?&gt; refreshToken(@RequestBody TokenRefreshRequest request) {
+        JwtToken refreshedToken = jwtTokenService.refreshToken(request.getToken());
+        return ResponseEntity.ok(new JwtResponse(refreshedToken.getToken()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity&lt;?&gt; logout(@RequestBody LogoutRequest request) {
+        jwtTokenService.invalidateToken(request.getToken());
+        return ResponseEntity.noContent().build();
+    }
+}</code></pre>
+    
+            <h2 id="exception-handling">Exception Handling</h2>
+            <p>The starter provides custom exceptions for JWT-related errors:</p>
+            <ul>
+                <li><code>JwtException</code> : Base exception for all JWT-related errors</li>
+                <li><code>TokenExpiredException</code> : Thrown when a token has expired</li>
+                <li><code>InvalidTokenException</code> : Thrown when a token is invalid</li>
+            </ul>
+    
+            <h2 id="advanced-usage">Advanced Usage</h2>
+    
+            <h3 id="custom-jwt-token-service">Custom JWT Token Service</h3>
+            <p>You can provide your own implementation of <code>JwtTokenService</code> to customize token generation and
+                validation:</p>
+            <pre><code class="language-java">@Service
+public class CustomJwtTokenService implements JwtTokenService {
+    // Your custom implementation
+}</code></pre>
+    
+            <h3 id="custom-security-configuration">Custom Security Configuration</h3>
+            <p>If you need more control over the security configuration, you can define your own
+                <code>SecurityFilterChain</code> bean:
+            </p>
+            <pre><code class="language-java">@Configuration
+public class SecurityConfig {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/public/**").permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+}</code></pre>
+    
+            <h3 id="custom-token-blacklist-implementation">Custom Token Blacklist Implementation</h3>
+            <p>By default, an in-memory implementation of <code>TokenBlacklistService</code> is provided. For production
+                environments, you might want to implement a persistent solution:</p>
+            <pre><code class="language-java">@Service
+@Primary
+public class JpaTokenBlacklistService implements TokenBlacklistService {
+    
+    private final BlacklistedTokenRepository tokenRepository;
+    
+    public JpaTokenBlacklistService(BlacklistedTokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
+    
+    @Override
+    public void blacklistToken(String token, long expirationDuration) {
+        BlacklistedToken blacklistedToken = new BlacklistedToken();
+        blacklistedToken.setToken(token);
+        blacklistedToken.setExpirationTime(expirationDuration);
+        tokenRepository.save(blacklistedToken);
+    }
+    
+    @Override
+    public boolean isBlacklisted(String token) {
+        return tokenRepository.existsByToken(token);
+    }
+    
+    // Optional: Cleanup method to remove expired tokens
+    @Scheduled(fixedRateString = "${jwt.blacklisted-cleanup-interval-ms:600000}")
+    public void cleanupExpiredTokens() {
+        tokenRepository.deleteByExpirationTimeLessThan(System.currentTimeMillis());
+    }
+}</code></pre>
+    
+            <h3 id="custom-claims">Custom Claims</h3>
+            <p>You can add custom claims to your JWT tokens:</p>
+            <pre><code class="language-java">Map&lt;String, Object&gt; claims = new HashMap&lt;&gt;();
+claims.put("userId", user.getId());
+claims.put("email", user.getEmail());
+claims.put("roles", user.getRoles());
+
+JwtToken token = jwtTokenService.generateToken(user.getUsername(), claims);</code></pre>
+    
+            <h2 id="documentation">Documentation</h2>
+            <p>For detailed API documentation, please refer to the <a
+                    href="https://javadoc.io/doc/io.github.seydoucisse/jwt-spring-boot-starter">Javadoc</a>.</p>
+    
+            <h2 id="license">License</h2>
+            <p>This project is licensed under the MIT License - see the LICENSE file for details.</p>
+    
+            <footer
+                style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border-color); text-align: center; color: #6a737d;">
+                <p>© 2025 JWT Spring Boot Starter | <a href="https://github.com/seydoucisse/jwt-spring-boot-starter"
+                        target="_blank" rel="noopener noreferrer">GitHub Repository</a></p>
+            </footer>
+        </div>
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-core.min.js" integrity="sha256-bKrTFt2ZHyT4AE4LnBnAVctYKf9l6XP77kBvltgbjn4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js" integrity="sha256-NSwb7O0HrDJcC+2SASgGuCP8+tdpIhqnzLTZkGRJRCk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" integrity="sha256-qf3MqHLzDh4qqAnc9QVmqjEWBA4CfzP1YwRFbfNfpnE=" crossorigin="anonymous"></script>
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add foldable functionality to the table of contents
+        document.addEventListener('DOMContentLoaded', function () {
+            const tocHeading = document.querySelector('.toc h2');
+            const toc = document.querySelector('.toc');
+
+            tocHeading.addEventListener('click', function () {
+                toc.classList.toggle('collapsed');
+            });
+
+        });
+    </script>
+</body>
+
+</html>
