@@ -18,7 +18,7 @@ jobs:
           server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_TOKEN
-          gpg-private-key: MAVEN_PGP_PRIVATE_KEY
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
           
       - name: Publish to Maven Central
@@ -27,4 +27,3 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          MAVEN_PGP_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
