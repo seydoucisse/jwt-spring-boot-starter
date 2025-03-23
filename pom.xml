@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
     
     <name>JWT Spring Boot Starter</name>
-    <description>A Spring Boot starter for JWT authentication</description>
+    <description>A Spring Boot starter for JWT-based authentication</description>
     <url>https://seydoucisse.github.io/jwt-spring-boot-starter</url>
     
     <licenses>
