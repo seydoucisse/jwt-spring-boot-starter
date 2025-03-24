@@ -1,6 +1,6 @@
 # JWT Spring Boot Starter
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.seydoucisse/jwt-spring-boot-starter)](https://maven-badges.herokuapp.com/maven-central/io.github.seydoucisse/jwt-spring-boot-starter) [![Javadoc](https://javadoc.io/badge2/io.github.seydoucisse/jwt-spring-boot-starter/javadoc.svg)](https://javadoc.io/doc/io.github.seydoucisse/jwt-spring-boot-starter) [![Build Status](https://img.shields.io/github/actions/workflow/status/seydoucisse/jwt-spring-boot-starter/build.yml?branch=main)](https://github.com/seydoucisse/jwt-spring-boot-starter/actions)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.seydoucisse/jwt-spring-boot-starter)](https://maven-badges.herokuapp.com/maven-central/io.github.seydoucisse/jwt-spring-boot-starter) [![Javadoc](https://javadoc.io/badge2/io.github.seydoucisse/jwt-spring-boot-starter/javadoc.svg)](https://javadoc.io/doc/io.github.seydoucisse/jwt-spring-boot-starter) [![Build Status](https://img.shields.io/github/actions/workflow/status/seydoucisse/jwt-spring-boot-starter/publish.yml?branch=main)](https://github.com/seydoucisse/jwt-spring-boot-starter/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A simple Spring Boot starter for JWT (JSON Web Token) authentication that automatically configures JWT functionality in Spring Boot applications.
